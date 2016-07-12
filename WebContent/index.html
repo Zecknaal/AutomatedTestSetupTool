@@ -4,22 +4,24 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
 		
-
+	
 		<script src="resources/sap-ui-core.js"
 				id="sap-ui-bootstrap"
 				data-sap-ui-libs="sap.ui.commons"
 				data-sap-ui-theme="sap_bluecrystal">
 		</script>
 		<!-- add sap.ui.table,sap.ui.ux3 and/or other libraries to 'data-sap-ui-libs' if required -->
+	
+		<script src="autotestsetuptree.js"></script>
+		<script src="uinode.js"></script>
 
 		<script>
-				sap.ui.localResources("automatedtestsetuptool");
-				var view = sap.ui.view({id:"idAutomatedTestSetupToolView1", viewName:"automatedtestsetuptool.AutomatedTestSetupToolView", type:sap.ui.core.mvc.ViewType.JS});
-				view.placeAt("content");
+			tree = new AutomatedTestSetupTree();
+			tree.createNewTree("testsetuptree");
+			tree.addNodesToTree();
 		</script>
-
 	</head>
 	<body class="sapUiBody" role="application">
-		<div id="content"></div>
+		<div id="testsetuptree"></div>
 	</body>
 </html>

@@ -1,27 +1,46 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
-		
-	
+	<head>	
 		<script src="resources/sap-ui-core.js"
 				id="sap-ui-bootstrap"
 				data-sap-ui-libs="sap.ui.commons"
 				data-sap-ui-theme="sap_bluecrystal">
 		</script>
-		<!-- add sap.ui.table,sap.ui.ux3 and/or other libraries to 'data-sap-ui-libs' if required -->
+		<script src="Libraries/Angular/angular.min.js"></script>
 	
-		<script src="autotestsetuptree.js"></script>
-		<script src="uinode.js"></script>
+<!-- 		<script src="autotestsetuptree.js"></script>
+		<script src="uinode.js"></script> -->
 
-		<script>
-			tree = new AutomatedTestSetupTree();
-			tree.createNewTree("testsetuptree");
-			tree.addNodesToTree();
-		</script>
+<!-- 		<script>
+			//tree = new AutomatedTestSetupTree();
+			//tree.createNewTree("testsetuptree");
+			//tree.addNodesToTree();
+		</script> -->
 	</head>
 	<body class="sapUiBody" role="application">
 		<div id="testsetuptree"></div>
 	</body>
+	<script src="Libraries/AngularTree/angular-ui-tree.js"></script>
+	<script src="tutjs.js"></script>
+	<link rel="stylesheet" type="text/css" href="Libraries/AngularTree/angular-ui-tree.css">
+	<link rel="stylesheet" type="text/css" href="app.css">
+	
+ 	<div class="row" ng-app="HelloWorldApp" ng-controller="HelloWorldController">
+ 		<div ui-tree>
+	 			<ol ui-tree-nodes ng-model="data">
+	 				<li ng-repeat="node in data" ui-tree-node ng-include src="'nodes_renderer.html'">
+
+	 				</li>
+	 			</ol>
+ 		</div>
+
+	</div>
+	
+	<div id="Add" ng-app="AddNumbers">
+		<div ng-controller="AddNumbersController">
+			<input ng-model="a" ng-keyup = "AddNumbers()">
+			<input ng-model="b" ng-keyup = "AddNumbers()">
+			<h1>{{sum}}</h1>
+		</div>
+	</div>
 </html>

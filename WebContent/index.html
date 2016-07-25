@@ -11,6 +11,7 @@
 	    <script src="bootstrap.js"></script>
 		<link rel="stylesheet" type="text/css" href="Libraries/AngularTree/angular-ui-tree.css">
 		<link rel="stylesheet" type="text/css" href="app.css">
+		<link rel="stylesheet" type="text/css" href="modal.css">
 		<link rel="stylesheet" type="text/css" href="bower_components/angular-bootstrap-contextmenu/demo/styles.css">
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		
@@ -68,6 +69,7 @@
 			 ng-app="AutoTestSetupDetailApp" 
 			 ng-controller="AutoTestSetupDetailController">
 			<ol class="input-list">
+				<h1>{{title}}</h1>
 				<li ng-repeat="param in params">
 					<label>{{param}}</label>
 					<input>

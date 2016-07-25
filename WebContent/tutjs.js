@@ -51,23 +51,25 @@ function TestDataReader(){
 	            }
 	       ];
     	   return autoTestData;
-		}
+		};
+		
+		this.getTestStepDetails = function(testStep){
+			if(testStep = 'Setup Inventory')
+				return ['Quantity', 'Batch', 'Product', 'Location'];
+			else if(testStep = 'Create IDoc')
+				return ['PRIMPSO', 'Sold-to', 'Ship-to', 'Search Alt', 'Product', 'Quantity'];
+		};
 }
 
-var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootstrap.contextMenu', 'ui.bootstrap'])
-   autoTestTree.controller('AutoTestSetupTreeController',[ '$scope', function($scope, $uibModal, $log){
-	    $scope.testSetContextMenu = [
-	                                ['Add Test', function($itemScope){
-	                                  alert('Add Test');
-	                                }]
-   	   ];
-	    
-	    $scope.open = function (size) {
+var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootstrap.contextMenu', 'ui.bootstrap', 'ModalInstanceControlApp']);
+
+   autoTestTree.controller('AutoTestSetupTreeController',[ '$scope', '$uibModal', function($scope, $uibModal, $log){	    
+	   $scope.open = function (size) {
 	    	var modalInstance = $uibModal.open({
 	    	      animation: $scope.animationsEnabled,
-	    	      templateUrl: 'myModalContent.html',
+	    	      templateUrl: 'ModalContent.html',
 	    	      controller: 'ModalInstanceCtrl',
-	    	      size: size,
+	    	      windowClass: 'app-modal-window',
 	    	      resolve: {
 	    	        items: function () {
 	    	          return $scope.items;
@@ -75,35 +77,21 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 	    	      }
 	    	    });
 	    	
+	    	 modalInstance.closed.then(function(){
+	    		 alert('Cancelled');
+	    	 });
 	    	 modalInstance.result.then(function (selectedItem) {
-	    	      $scope.selected = selectedItem;
-	    	    }, function () {
-	    	      $log.info('Modal dismissed at: ' + new Date());
-	    	    });
+	    	      alert(selectedItem);
+    	     });
 	    }
 	   
        var a = new TestDataReader( );
 
        $scope.autoTestData = a.read();
        
-       $scope.loadOnClick = function(scope){
-    	   scope.remove();
-    	   
-       }
-       
        $scope.remove = function(scope){
     	   scope.remove();
-    	   
        }
-       $scope.buttonClick = function(scope){
-    	   scope.remove();
-    	   
-       }
-	    $scope.testContextMenu = [
-	                                ['Add Test Step', function($itemScope){
-	                                  alert('Add Test');
-	                                }]
-	   ];
 	    
 	    $scope.contextMenu = function(scope){
 	    	return [
@@ -118,22 +106,29 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 	    }
        
 	    $scope.addItem = function(scope){
-	    	var nodeData = scope.$modelValue;
+	    	$scope.open();
+/*	    	var nodeData = scope.$modelValue;
 	    	nodeData.title = 'Ttest';
 	        nodeData.nodes.push({
 	          id: nodeData.id * 10 + nodeData.nodes.length,
 	          title: nodeData.title + '.' + (nodeData.nodes.length + 1),
 	          nodes: []
-	        });
+	        });*/
 	    };
 	   $scope.updateCurrentItem = function(scope){
 		   this.currentItem = scope;
 	   }
-	   $scope.hidden = false;
+	   this.currentItem = 'nothing';
 }]);
 
-var autoTestDetail = angular.module('AutoTestSetupDetailApp', ['ui.bootstrap.contextMenu'])
-	autoTestDetail.controller('AutoTestSetupDetailController',function($scope){
+autoTestTree.service('testservice', function() {
+    this.myFunc = function () {
+        return autoTestTree.currentItem;
+    }
+});
+
+var autoTestDetail = angular.module('AutoTestSetupDetailApp', ['ui.bootstrap.contextMenu', 'AutoTestSetupTreeApp'])
+	autoTestDetail.controller('AutoTestSetupDetailController',function($scope, testservice){
 	    $scope.testSetContextMenu = [
 	                                ['Add Test', function($itemScope){
 	                                  alert('Add Test');
@@ -141,18 +136,19 @@ var autoTestDetail = angular.module('AutoTestSetupDetailApp', ['ui.bootstrap.con
 	   ];
 	   
     $scope.params = ['Quantity', 'Product'];
-    $scope.title = 'Parameters';
+    $scope.title = testservice.myFunc( );
 });
 
-var modalInstanceControl = angular.module('ModalInstanceControlApp', []).controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
+angular.module('ModalInstanceControlApp', []).controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
 
 	  $scope.items = items;
 	  $scope.selected = {
-	    item: $scope.items[0]
+	    //item: 'item'//$scope.items[0]
 	  };
 
 	  $scope.ok = function () {
-	    $uibModalInstance.close($scope.selected.item);
+	    $uibModalInstance.close($scope.nodeName);
+	    this.nodeName = $scope.nodeName;
 	  };
 
 	  $scope.cancel = function () {
@@ -162,6 +158,4 @@ var modalInstanceControl = angular.module('ModalInstanceControlApp', []).control
 
 angular.element(document).ready(function() {
 	angular.bootstrap(document.getElementById('AutoTestDetail'), ['AutoTestSetupDetailApp']);
-	angular.bootstrap(document.getElementById('AutoTestTree'),   ['AutoTestSetupTreeApp']);
-	angular.bootstrap(document.getElementById('AutoTestTreee'),   ['ModalInstanceControlApp']);
 });

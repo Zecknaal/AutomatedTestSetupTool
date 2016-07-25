@@ -1,46 +1,78 @@
 <!DOCTYPE HTML>
 <html>
-	<head>	
-		<script src="resources/sap-ui-core.js"
-				id="sap-ui-bootstrap"
-				data-sap-ui-libs="sap.ui.commons"
-				data-sap-ui-theme="sap_bluecrystal">
-		</script>
-		<script src="Libraries/Angular/angular.min.js"></script>
+	<head>
+			<script src="Libraries/Angular/angular.min.js"></script>		
 	
-<!-- 		<script src="autotestsetuptree.js"></script>
-		<script src="uinode.js"></script> -->
-
-<!-- 		<script>
-			//tree = new AutomatedTestSetupTree();
-			//tree.createNewTree("testsetuptree");
-			//tree.addNodesToTree();
-		</script> -->
+		
+		<script src="Libraries/AngularTree/angular-ui-tree.js"></script>
+		<script src="tutjs.js"></script>
+		<script src="bower_components/angular-bootstrap-contextmenu/contextMenu.js"></script>
+<!-- 	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> -->
+	    <script src="bootstrap.js"></script>
+		<link rel="stylesheet" type="text/css" href="Libraries/AngularTree/angular-ui-tree.css">
+		<link rel="stylesheet" type="text/css" href="app.css">
+		<link rel="stylesheet" type="text/css" href="bower_components/angular-bootstrap-contextmenu/demo/styles.css">
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		
 	</head>
-	<body class="sapUiBody" role="application">
-		<div id="testsetuptree"></div>
-	</body>
-	<script src="Libraries/AngularTree/angular-ui-tree.js"></script>
-	<script src="tutjs.js"></script>
-	<link rel="stylesheet" type="text/css" href="Libraries/AngularTree/angular-ui-tree.css">
-	<link rel="stylesheet" type="text/css" href="app.css">
-	
- 	<div class="row" ng-app="HelloWorldApp" ng-controller="HelloWorldController">
- 		<div ui-tree>
-	 			<ol ui-tree-nodes ng-model="data">
-	 				<li ng-repeat="node in data" ui-tree-node ng-include src="'nodes_renderer.html'">
 
+ 	<div id = 'Left Side' 
+ 	     class="left-side">
+	 	<div id='AutoTestTree' 
+	 	     class="row" 
+	 	     ng-app="AutoTestSetupTreeApp" 
+	 	     ng-controller="AutoTestSetupTreeController">
+	  		<div ui-tree>
+	 			<ol ui-tree-nodes 
+	 			    ng-model="autoTestData" 
+	 			    ng-hide="hidden">
+	 				<li ng-repeat="testset in autoTestData" 
+	 				    data-nodrag 
+	 				    context-menu="contextMenu(this)"
+	 				    ui-tree-node>
+						<div ui-tree-handle>
+							{{testset.title}}
+				 			<ol ui-tree-nodes 
+				 			    ng-model="testset.nodes">
+				 				<li ng-repeat="test in testset.nodes" 
+				 					class="list-group-item"
+				 					context-menu="contextMenu(this)" 
+				 					ui-tree-node 
+				 					ng-mouseover="updateCurrentItem(this)">
+									<div ui-tree-handle>
+										{{test.title}}
+							 			<ol ui-tree-nodes 
+							 				ng-model="test.nodes">
+							 				<li ng-repeat="teststep in test.nodes" 
+							 					context-menu="contextMenu(this)" 
+							 					ui-tree-node>
+												<div ui-tree-handle>
+													{{teststep.title}}
+												</div>
+											</li>
+										</ol>
+									</div>
+								</li>
+							</ol>
+						</div>
 	 				</li>
 	 			</ol>
- 		</div>
-
+	 		</div>
+		</div>
 	</div>
 	
-	<div id="Add" ng-app="AddNumbers">
-		<div ng-controller="AddNumbersController">
-			<input ng-model="a" ng-keyup = "AddNumbers()">
-			<input ng-model="b" ng-keyup = "AddNumbers()">
-			<h1>{{sum}}</h1>
+
+	
+	<div class="right-side">
+		<div id='AutoTestDetail' 
+			 ng-app="AutoTestSetupDetailApp" 
+			 ng-controller="AutoTestSetupDetailController">
+			<ol class="input-list">
+				<li ng-repeat="param in params">
+					<label>{{param}}</label>
+					<input>
+				</li>
+			</ol>
 		</div>
 	</div>
 </html>

@@ -16,12 +16,11 @@
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		
 	</head>
-
+	<div ng-app = "AutoTestSetupTreeApp">
  	<div id = 'Left Side' 
  	     class="left-side">
 	 	<div id='AutoTestTree' 
 	 	     class="row" 
-	 	     ng-app="AutoTestSetupTreeApp" 
 	 	     ng-controller="AutoTestSetupTreeController">
 	  		<div ui-tree>
 	 			<ol ui-tree-nodes 
@@ -38,15 +37,15 @@
 				 				<li ng-repeat="test in testset.nodes" 
 				 					class="list-group-item"
 				 					context-menu="contextMenu(this)" 
-				 					ui-tree-node 
-				 					ng-mouseover="updateCurrentItem(this)">
+				 					ui-tree-node >
 									<div ui-tree-handle>
 										{{test.title}}
 							 			<ol ui-tree-nodes 
 							 				ng-model="test.nodes">
 							 				<li ng-repeat="teststep in test.nodes" 
 							 					context-menu="contextMenu(this)" 
-							 					ui-tree-node>
+							 					ui-tree-node
+				 								ng-mouseover="updateCurrentItem(this)">
 												<div ui-tree-handle>
 													{{teststep.title}}
 												</div>
@@ -66,7 +65,6 @@
 	
 	<div class="right-side">
 		<div id='AutoTestDetail' 
-			 ng-app="AutoTestSetupDetailApp" 
 			 ng-controller="AutoTestSetupDetailController">
 			<ol class="input-list">
 				<h1>{{title}}</h1>
@@ -76,5 +74,6 @@
 				</li>
 			</ol>
 		</div>
+	</div>
 	</div>
 </html>

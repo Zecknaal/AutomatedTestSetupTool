@@ -44,8 +44,8 @@
 							 				ng-model="test.nodes">
 							 				<li ng-repeat="teststep in test.nodes" 
 							 					context-menu="contextMenu(this)" 
-							 					ui-tree-node
-				 								ng-mouseover="updateCurrentItem(this)">
+							 					ui-tree-node  style="myStyle"
+				 								ng-click="updateSelectedItem(this)">
 												<div ui-tree-handle>
 													{{teststep.title}}
 												</div>

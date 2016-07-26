@@ -6,6 +6,10 @@ function TestStep(testStep, test, testSet, type){
 	
 	var reader = new TestStepDataReader();
 	this.params = reader.readData(testStep, test, testSet);
+	
+	this.getParams = function(){
+		return this.params;
+	}
 }
 
 function TestStepDataReader(){
@@ -13,6 +17,7 @@ function TestStepDataReader(){
 		if(testStep == 'Add Inventory'){
 			return [ 'Product', 'Quantity', 'Batch', 'Location' ];
 		}
+		return ['Some other param'];
 	}
 }
 function TestDataReader(){
@@ -98,7 +103,17 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 	}
 })
 
-.controller('AutoTestSetupTreeController',[ '$scope', '$uibModal', 'ParamService', 'ModalService', function($scope, $uibModal, ParamService, ModalService){	    
+.service('SelectedNodeService', function(){
+	this.setSelectedNode = function(selectedNode){
+		this.node = selectedNode;
+	}
+	this.getSelectedNode = function(){
+		return this.node;
+	}
+})
+
+.controller('AutoTestSetupTreeController',[ '$scope', '$uibModal', 'ParamService', 'ModalService', 'SelectedNodeService', 'ModalResponseService',
+                                            function($scope, $uibModal, ParamService, ModalService, SelectedNodeService, ModalResponseService){	    
    $scope.open = function (size) {
     	var modalInstance = $uibModal.open({
     	      animation: $scope.animationsEnabled,
@@ -115,11 +130,11 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
     	 modalInstance.closed.then(function(){
     		 //alert('Cancelled');
     	 });
-    	 modalInstance.result.then(function (nodeName) {
-    	      ModalService.updateNodeName(nodeName);
+    	 modalInstance.result.then(function () {
+    	      //ModalService.updateNodeName(nodeName);
 	     });
     }
-   
+   myStyle={'background-color':'blue !important'};
    var a = new TestDataReader( );
 
    $scope.autoTestData = a.read();
@@ -129,6 +144,7 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
    }
     
     $scope.contextMenu = function(scope){
+    	SelectedNodeService.setSelectedNode(scope);
     	return [
     	        [scope.$modelValue.title,
     	         null],
@@ -141,44 +157,73 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
     }
    
     $scope.addItem = function(scope){
+    	ModalResponseService.setCallback($scope.addNode);
     	$scope.open();
-    	var nodeData = scope.$modelValue;
-    	//nodeData.title = scope.$modelValue.teststep.testStep;
+    };
+    
+    $scope.addNode = function(title){
+	    var nodeData = SelectedNodeService.getSelectedNode().$modelValue;
         nodeData.nodes.push({
           id: nodeData.id * 10 + nodeData.nodes.length,
-          title: ModalService.getNodeName(),
+          title: title,
+          teststep: new TestStep(title, '1A1 Setup Test', 'Product setup testing'),
           nodes: []
         });
-    };
-   $scope.updateCurrentItem = function(scope){
+    }
+   
+   $scope.updateSelectedItem = function(scope){
 	   this.currentItem = scope;
-	   ParamService.params = [scope.$modelValue.title, 'a'];
+	   ParamService.params = scope.$modelValue.teststep.getParams();//[scope.$modelValue.title, 'a'];
    }
    this.currentItem = 'nothing';
 }])
-.controller('AutoTestSetupDetailController',function($scope, ParamService){
+.controller('AutoTestSetupDetailController', [ '$scope', 'ParamService', 'SelectedNodeService', function($scope, ParamService, SelectedNodeService){
 	    $scope.testSetContextMenu = [
 	                                ['Add Test', function($itemScope){
 	                                  alert('Add Test');
 	                                }]
 	   ];
-    $scope.params = ['Quantity', 'Product'];
+    //$scope.params = ['Quantity', 'Product'];
+	//this.selectedNode = SelectedNodeService.getSelectedNode();
+	//if(typeof this.selectedNode != 'undefined')
+	//	ParamService.params = [ selectedNode.teststep.testStep ];
     $scope.$watch(
     		function(){ return ParamService.params },
     		function(newval) { $scope.params = newval }
     		)
-});
+}]);
 
 
 
-angular.module('ModalInstanceControlApp', []).controller('ModalInstanceCtrl', function ($scope, $uibModalInstance) {
+angular.module('ModalInstanceControlApp', ['ModalResponse']).controller('ModalInstanceCtrl', [ '$scope', '$uibModalInstance', 'SelectedNodeService', 'ModalResponseService',
+                                                                                function ($scope, $uibModalInstance, SelectedNodeService, ModalResponseService) {
 	  $scope.ok = function () {
-	    $uibModalInstance.close($scope.nodeName);
-	    this.nodeName = $scope.nodeName;
+	    this.callback = ModalResponseService.getCallback();
+	    this.callback($scope.nodeName);
+	    
+	    $uibModalInstance.close();
 	  };
 
 	  $scope.cancel = function () {
 	    $uibModalInstance.dismiss('cancel');
 	  };
-	});
+	}]);
 
+angular.module('ModalResponse', [])
+.service('ModalResponseService', function(){
+	this.setResponse = function(response){
+		this.response = response;
+	}
+	
+	this.getResponse = function(){
+		return this.response;
+	}
+	
+	this.setCallback = function(callback){
+		this.callback = callback;
+	}
+	
+	this.getCallback = function(){
+		return this.callback;
+	}
+})

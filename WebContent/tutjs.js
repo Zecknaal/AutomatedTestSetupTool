@@ -11,6 +11,16 @@ function TestStep(testStep, test, testSet, type){
 		return this.params;
 	}
 }
+function TestStepTemplate(testStep){
+	this.testStep= testStep;
+	
+	var reader = new TestStepDataReader();
+	this.params = reader.readData(testStep, test, testSet);
+	
+	this.getParams = function(){
+		return this.params;
+	}
+}
 
 function TestStepDataReader(){
 	this.readData = function(testStep, test, testSet){
@@ -18,6 +28,27 @@ function TestStepDataReader(){
 			return [ 'Product', 'Quantity', 'Batch', 'Location' ];
 		}
 		return ['Some other param'];
+	}
+	
+	this.readTemplateData = function(testStep){
+		
+	}
+	
+	this.readAllTemplates = function(){
+		//Do a URI read on templates here
+		// ....
+		data = [ { testStep: 'Add Inventory',
+		           params: ['Product', 'Quantity', 'Batch', 'Location' ] },
+		         { testStep: 'Send Sales Order Create',
+		           params: ['Sold-to', 'Ship-to', 'Product', 'Quantity'] } ];
+		
+		return data;
+/*		for(templateIndex = 0; templateIndex < data.length; ++templateIndex){
+			testStep = new TestStepTemplate(data[templateIndex].testStep);
+			testStep.params = data[templateIndex].params;
+			
+		}*/
+		
 	}
 }
 function TestDataReader(){
@@ -195,8 +226,8 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
 
 
-angular.module('ModalInstanceControlApp', ['ModalResponse']).controller('ModalInstanceCtrl', [ '$scope', '$uibModalInstance', 'SelectedNodeService', 'ModalResponseService',
-                                                                                function ($scope, $uibModalInstance, SelectedNodeService, ModalResponseService) {
+angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).controller('ModalInstanceCtrl', [ '$scope', '$uibModalInstance', 'SelectedNodeService', 'ModalResponseService', 'TestDataManagerService',
+                                                                                function ($scope, $uibModalInstance, SelectedNodeService, ModalResponseService, TestDataManagerService) {
 	  $scope.ok = function () {
 	    this.callback = ModalResponseService.getCallback();
 	    this.callback($scope.nodeName);
@@ -207,6 +238,8 @@ angular.module('ModalInstanceControlApp', ['ModalResponse']).controller('ModalIn
 	  $scope.cancel = function () {
 	    $uibModalInstance.dismiss('cancel');
 	  };
+	  
+	  $scope.testSteps = TestDataManagerService.getAllTestSteps();
 	}]);
 
 angular.module('ModalResponse', [])
@@ -226,4 +259,12 @@ angular.module('ModalResponse', [])
 	this.getCallback = function(){
 		return this.callback;
 	}
-})
+});
+
+angular.module('TestDataManager', [])
+	.service('TestDataManagerService', function(){
+		this.getAllTestSteps = function(){
+			var testStepReader = new TestStepDataReader();
+			return testStepReader.readAllTemplates();
+		}
+	})

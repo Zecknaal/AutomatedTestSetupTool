@@ -9,7 +9,10 @@
 		uib-dropdown-menu 
 		role="menu" 
 		aria-labelledby="btn-append-to-body">
-		<li role="menuItem"><a href="#">Item</a></li>
+		<li role="menuItem" ng-repeat="testStep in testSteps"><a href="#">{{testStep.testStep}}</a></li>
+<!-- 		<li role="menuItem"><a href="#">Setup Inventory</a></li>
+		<li role="menuItem"><a href="#">Create Sales Order</a></li>
+		<li role="menuItem"><a href="#">Validate Item Category</a></li> -->
 	</ul>
 </div>
 

@@ -1,6 +1,16 @@
 
-<div class="modal-header">
+<div class="modal-header" uib-dropdown dropdown-append-to-body>
 	<input type="text" placeholder="Enter Node Name" ng-model="nodeName" required>
+	<button id="btn-append-to-body" type="button" class="btn btn-primary" uib-dropdown-toggle>
+	Select Test Type <span class="caret"></span>
+	</button>
+	<ul style = "z-index: 10000" 
+		class="dropdown-menu" 
+		uib-dropdown-menu 
+		role="menu" 
+		aria-labelledby="btn-append-to-body">
+		<li role="menuItem"><a href="#">Item</a></li>
+	</ul>
 </div>
 
 <div class="modal-footer">

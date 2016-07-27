@@ -85,3 +85,7 @@ tr.angular-ui-tree-empty {
 .list-group-item{
 	padding: 0 !important;
 }
+
+.on-top{
+	z-index: 50000;
+}

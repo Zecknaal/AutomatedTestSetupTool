@@ -20,9 +20,9 @@ function Test(test, testSet){
 	this.modalTemplate = "TestModalContent.html";
 	this.getContextMenu = function(scope){ 
 		return [ 
-		        ['Add test step to ' + testSet,
+		        ['Add test step to ' + test,
 		        scope.addItem],
-		        ['Delete ' + testSet,
+		        ['Delete ' + test,
 		        scope.remove]
 	        ];
 	}
@@ -282,6 +282,9 @@ angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).
 	  };
 	  $scope.setTestStepResponse = function(){
 		  ModalResponseService.setResponse( new TestStep($scope.nodeName, 'Test', 'TestSet', $scope.modalSelectedNode) );
+	  }
+	  $scope.setTestResponse = function(){
+		  ModalResponseService.setResponse( new Test($scope.nodeName, 'TestSet') );
 	  }
 	  $scope.testSteps = TestDataManagerService.getAllTestSteps();
 	}]);

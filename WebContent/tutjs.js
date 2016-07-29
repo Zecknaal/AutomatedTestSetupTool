@@ -61,10 +61,10 @@ function TestStepTemplate(testStep){
 
 function TestStepDataReader(){
 	this.readParamValues = function(testStep, test, testSet, type){
-		if(testStep == 'Add Inventory'){
+		if(type == 'Add Inventory'){
 			return [ 'Product', 'Quantity', 'Batch', 'Location' ];
 		}
-		else if(testStep == 'Send Sales Order Create')
+		else if(type == 'Send Sales Order Create')
 			return['PRIMPSO', 'Order Type', 'Product', 'Quantity'];
 		return ['Some other param'];
 	}
@@ -263,7 +263,7 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
 
 angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).controller('ModalInstanceCtrl', [ '$scope', '$uibModalInstance', 'SelectedNodeService', 'ModalResponseService', 'TestDataManagerService',
-                                                                                function ($scope, $uibModalInstance, SelectedNodeService, ModalResponseService, TestDataManagerService) {
+                                                                                function ($scope, $uibModalInstance,  SelectedNodeService, ModalResponseService, TestDataManagerService) {
 	$scope.modalSelectedNode='Please select nodee';  
 	
 	$scope.ok = function () {
@@ -278,6 +278,7 @@ angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).
 		  $scope.modalSelectedNode = selection.testStep;
 	  }
 	  $scope.cancel = function () {
+		TestDataManagerService.readAllTestSetsFromURI( );
 	    $uibModalInstance.dismiss('cancel');
 	  };
 	  $scope.setTestStepResponse = function(){
@@ -308,10 +309,18 @@ angular.module('ModalResponse', [])
 	}
 });
 
-angular.module('TestDataManager', [])
-	.service('TestDataManagerService', function(){
+angular.module('TestDataManager', ['ngResource'])
+	.service('TestDataManagerService', ['$resource', function($resource){
 		this.getAllTestSteps = function(){
 			var testStepReader = new TestStepDataReader();
 			return testStepReader.readAllTemplates();
 		}
-	})
+		
+		this.readAllTestSetsFromURI = function(){
+			var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet?$format=json', { });
+			testSets.get({}, function(testSets){
+				this.something = 5;
+			})
+		}
+	}])
+	

@@ -1,8 +1,45 @@
+function TestSet(testSet){
+	this.testSet = testSet;
+	
+	this.modalTemplate = "TestSetModalContent.html";
+	this.getContextMenu = function(scope){ 
+							return [ 
+						        ['Add test to ' + testSet,
+						        scope.addItem],
+						        ['Delete ' + testSet,
+						        scope.remove]
+					        ];
+	}
+	
+}
+
+function Test(test, testSet){
+	this.test = test;
+	this.testSet = testSet;
+	
+	this.modalTemplate = "TestModalContent.html";
+	this.getContextMenu = function(scope){ 
+		return [ 
+		        ['Add test step to ' + testSet,
+		        scope.addItem],
+		        ['Delete ' + testSet,
+		        scope.remove]
+	        ];
+	}
+}
+
 function TestStep(testStep, test, testSet, type){
 	this.testStep= testStep;
 	this.test = test;
 	this.testSet = testSet;
 	this.type = type;
+	this.modalTemplate = "TestStepModalContent.html";
+	this.getContextMenu = function(scope){ 
+		return [ 
+		        ['Delete ' + testSet,
+		        scope.remove]
+	        ];
+	}
 	
 	var reader = new TestStepDataReader();
 	this.params = reader.readData(testStep, test, testSet);
@@ -27,6 +64,8 @@ function TestStepDataReader(){
 		if(testStep == 'Add Inventory'){
 			return [ 'Product', 'Quantity', 'Batch', 'Location' ];
 		}
+		else if(testStep == 'Send Sales Order Create')
+			return['PRIMPSO', 'Order Type', 'Product', 'Quantity'];
 		return ['Some other param'];
 	}
 	
@@ -58,15 +97,18 @@ function TestDataReader(){
 		    	{
 		    		'id' : 1,
 		    		'title': 'Product setup testing',
+		    		'object': new TestSet('Product setup testing'),
 		    		'nodes' : 
 		    			[
 		    			 	{
 			    			 	'id' : 11,
 			    			 	'title' : '1A1 Setup Test',
+			    			 	'object': new Test('1A1 Setup Test', 'Product setup testing'),
 			    			 	'nodes' : [
 				   		    			 	{
 							    			 	'id' : 111,
 							    			 	'title' : 'Add Inventory',
+							    			 	'object' : new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing'),
 									    		'teststep': new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing'),
 							    			 	'nodes' : []
 						    			 	},
@@ -75,16 +117,19 @@ function TestDataReader(){
    		    			 	{
 			    			 	'id' : 12,
 			    			 	'title' : '1A1 Add Test',
+			    			 	'object': new Test('1A1 Add Test', 'Product setup testing'),
 			    			 	'nodes' : []
 		    			 	},
 		    			 	{
 			    			 	'id' : 13,
 			    			 	'title' : '1A1 Subtract Test',
+			    			 	'object': new Test('1A1 Subtract Test', 'Product setup testing'),
 			    			 	'nodes' : []
 		    			 	},
 		    			 	{
 			    			 	'id' : 14,
-			    			 	'title' : '1A1 Subtract Test',
+			    			 	'title' : '1A1 Magic Test',
+			    			 	'object': new Test('1A1 Magic Test', 'Product setup testing'),
 			    			 	'nodes' : []
 		    			 	}
 		    			]
@@ -92,6 +137,7 @@ function TestDataReader(){
 	            {
 		    		'id' : 2,
 		    		'title': 'Sales Order Create testing',
+		    		'object': new TestSet('Sales Order Create testing'),
 		    		'nodes' : 
 		    			[
 		    			]
@@ -99,6 +145,7 @@ function TestDataReader(){
 	            {
 		    		'id' : 3,
 		    		'title': 'Sales Order Maintenance testing',
+		    		'object': new TestSet('Sales Order Maintenance testing'),
 		    		'nodes' : 
 		    			[ ]
 	            }
@@ -145,10 +192,11 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
 .controller('AutoTestSetupTreeController',[ '$scope', '$uibModal', 'ParamService', 'ModalService', 'SelectedNodeService', 'ModalResponseService',
                                             function($scope, $uibModal, ParamService, ModalService, SelectedNodeService, ModalResponseService){	    
-   $scope.open = function (size) {
+   $scope.open = function (scope) {
     	var modalInstance = $uibModal.open({
     	      animation: $scope.animationsEnabled,
-    	      templateUrl: 'ModalContent.html',
+    	      //templateUrl: 'TestStepModalContent.html',
+    	      templateUrl: scope.$modelValue.object.modalTemplate,
     	      controller: 'ModalInstanceCtrl',
     	      windowClass: 'app-modal-window',
     	      resolve: {
@@ -170,26 +218,18 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
    $scope.autoTestData = a.read();
    
-   $scope.remove = function(scope){
+   $scope.remove = function(scope){6
 	   scope.remove();
    }
     
     $scope.contextMenu = function(scope){
     	SelectedNodeService.setSelectedNode(scope);
-    	return [
-    	        [scope.$modelValue.title,
-    	         null],
-    	        null,
-                ['Add test step',
-                 $scope.addItem],
-                ['Delete test',
-                 $scope.remove]
-               ];
+    	return scope.$modelValue.object.getContextMenu($scope);
     }
    
     $scope.addItem = function(scope){
     	ModalResponseService.setCallback($scope.addNode);
-    	$scope.open();
+    	$scope.open(scope);
     };
     
     $scope.addNode = function(title){
@@ -197,7 +237,7 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
         nodeData.nodes.push({
           id: nodeData.id * 10 + nodeData.nodes.length,
           title: title,
-          teststep: new TestStep(title, '1A1 Setup Test', 'Product setup testing'),
+          object: ModalResponseService.getResponse(),
           nodes: []
         });
     }
@@ -228,13 +268,19 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
 angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).controller('ModalInstanceCtrl', [ '$scope', '$uibModalInstance', 'SelectedNodeService', 'ModalResponseService', 'TestDataManagerService',
                                                                                 function ($scope, $uibModalInstance, SelectedNodeService, ModalResponseService, TestDataManagerService) {
-	  $scope.ok = function () {
+	$scope.modalSelectedNode='Please select nodee';  
+	
+	$scope.ok = function () {
 	    this.callback = ModalResponseService.getCallback();
 	    this.callback($scope.nodeName);
 	    
 	    $uibModalInstance.close();
 	  };
 
+	  
+	  $scope.setButton = function(selection){
+		  $scope.modalSelectedNode = selection.testStep;
+	  }
 	  $scope.cancel = function () {
 	    $uibModalInstance.dismiss('cancel');
 	  };

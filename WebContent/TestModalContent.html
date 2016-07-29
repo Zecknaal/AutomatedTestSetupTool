@@ -1,0 +1,21 @@
+<div class="modal-header" uib-dropdown>
+	<input type="text" placeholder="Enter Test Name" ng-model="nodeName" required>
+	<button id="btn-append-to-body" type="button" class="btn btn-primary" uib-dropdown-toggle>
+	{{modalSelectedNode}} <span class="caret"></span>
+	</button>
+	<ul style = "z-index: 10000" 
+		class="dropdown-menu" 
+		uib-dropdown-menu 
+		role="menu" 
+		aria-labelledby="btn-append-to-single-button">
+		<li role="menuItem" ng-repeat="testStep in testSteps"><a href="#" ng-click="setButton(testStep)">{{testStep.testStep}}</a></li>
+<!-- 		<li role="menuItem"><a href="#">Setup Inventory</a></li>
+		<li role="menuItem"><a href="#">Create Sales Order</a></li>
+		<li role="menuItem"><a href="#">Validate Item Category</a></li> -->
+	</ul>
+</div>
+
+<div class="modal-footer">
+   	<button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+   	<button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

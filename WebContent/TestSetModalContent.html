@@ -1,15 +1,14 @@
-
-<div class="modal-header" uib-dropdown dropdown-append-to-body>
-	<input type="text" placeholder="Enter Node Name" ng-model="nodeName" required>
+<div class="modal-header" uib-dropdown>
+	<input type="text" placeholder="Enter Test Set Name" ng-model="nodeName" required>
 	<button id="btn-append-to-body" type="button" class="btn btn-primary" uib-dropdown-toggle>
-	Select Test Type <span class="caret"></span>
+	{{modalSelectedNode}} <span class="caret"></span>
 	</button>
 	<ul style = "z-index: 10000" 
 		class="dropdown-menu" 
 		uib-dropdown-menu 
 		role="menu" 
-		aria-labelledby="btn-append-to-body">
-		<li role="menuItem" ng-repeat="testStep in testSteps"><a href="#">{{testStep.testStep}}</a></li>
+		aria-labelledby="btn-append-to-single-button">
+		<li role="menuItem" ng-repeat="testStep in testSteps"><a href="#" ng-click="setButton(testStep)">{{testStep.testStep}}</a></li>
 <!-- 		<li role="menuItem"><a href="#">Setup Inventory</a></li>
 		<li role="menuItem"><a href="#">Create Sales Order</a></li>
 		<li role="menuItem"><a href="#">Validate Item Category</a></li> -->

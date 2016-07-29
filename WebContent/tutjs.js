@@ -42,7 +42,7 @@ function TestStep(testStep, test, testSet, type){
 	}
 	
 	var reader = new TestStepDataReader();
-	this.params = reader.readData(testStep, test, testSet);
+	this.params = reader.readParamValues(testStep, test, testSet, type);
 	
 	this.getParams = function(){
 		return this.params;
@@ -60,7 +60,7 @@ function TestStepTemplate(testStep){
 }
 
 function TestStepDataReader(){
-	this.readData = function(testStep, test, testSet){
+	this.readParamValues = function(testStep, test, testSet, type){
 		if(testStep == 'Add Inventory'){
 			return [ 'Product', 'Quantity', 'Batch', 'Location' ];
 		}
@@ -109,7 +109,6 @@ function TestDataReader(){
 							    			 	'id' : 111,
 							    			 	'title' : 'Add Inventory',
 							    			 	'object' : new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing'),
-									    		'teststep': new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing'),
 							    			 	'nodes' : []
 						    			 	},
 					    			 	]
@@ -218,7 +217,7 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
    $scope.autoTestData = a.read();
    
-   $scope.remove = function(scope){6
+   $scope.remove = function(scope){
 	   scope.remove();
    }
     
@@ -233,6 +232,7 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
     };
     
     $scope.addNode = function(title){
+    	var temp = ModalResponseService.getResponse();
 	    var nodeData = SelectedNodeService.getSelectedNode().$modelValue;
         nodeData.nodes.push({
           id: nodeData.id * 10 + nodeData.nodes.length,
@@ -244,7 +244,7 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
    
    $scope.updateSelectedItem = function(scope){
 	   this.currentItem = scope;
-	   ParamService.params = scope.$modelValue.teststep.getParams();//[scope.$modelValue.title, 'a'];
+	   ParamService.params = scope.$modelValue.object.getParams();
    }
    this.currentItem = 'nothing';
 }])
@@ -254,10 +254,6 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 	                                  alert('Add Test');
 	                                }]
 	   ];
-    //$scope.params = ['Quantity', 'Product'];
-	//this.selectedNode = SelectedNodeService.getSelectedNode();
-	//if(typeof this.selectedNode != 'undefined')
-	//	ParamService.params = [ selectedNode.teststep.testStep ];
     $scope.$watch(
     		function(){ return ParamService.params },
     		function(newval) { $scope.params = newval }
@@ -284,7 +280,9 @@ angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).
 	  $scope.cancel = function () {
 	    $uibModalInstance.dismiss('cancel');
 	  };
-	  
+	  $scope.setTestStepResponse = function(){
+		  ModalResponseService.setResponse( new TestStep($scope.nodeName, 'Test', 'TestSet', $scope.modalSelectedNode) );
+	  }
 	  $scope.testSteps = TestDataManagerService.getAllTestSteps();
 	}]);
 

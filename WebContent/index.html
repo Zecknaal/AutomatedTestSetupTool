@@ -37,7 +37,7 @@
 				 				<li ng-repeat="test in testset.nodes" 
 				 					class="list-group-item"
 				 					context-menu="contextMenu(this)" 
-				 					ui-tree-node >
+				 					ui-tree-node>
 									<div ui-tree-handle>
 										{{test.title}}
 							 			<ol ui-tree-nodes 
@@ -46,7 +46,9 @@
 							 					context-menu="contextMenu(this)" 
 							 					ui-tree-node  style="myStyle"
 				 								ng-click="updateSelectedItem(this)">
-												<div ui-tree-handle>
+												<div ui-tree-handle
+													 ng-model="teststep.selected"
+												     ng-class="{'ui-item-selected' : isSelectedNode(this)}">
 													{{teststep.title}}
 												</div>
 											</li>

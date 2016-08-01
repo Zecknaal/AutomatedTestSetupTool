@@ -11,6 +11,9 @@ function TestSet(testSet){
 					        ];
 	}
 	
+	this.getKey = function(){
+		return { testSet: this.testSet};
+	}
 }
 
 function Test(test, testSet){
@@ -26,6 +29,10 @@ function Test(test, testSet){
 		        scope.remove]
 	        ];
 	}
+	
+	this.getKey = function(){
+		return { testSet: this.testSet, test: this.test};
+	}
 }
 
 function TestStep(testStep, test, testSet, type){
@@ -39,6 +46,10 @@ function TestStep(testStep, test, testSet, type){
 		        ['Delete ' + testSet,
 		        scope.remove]
 	        ];
+	}
+	
+	this.getKey = function(){
+		return { testSet: this.testSet, test: this.test, testStep: this.testStep};
 	}
 	
 	var reader = new TestStepDataReader();
@@ -98,17 +109,20 @@ function TestDataReader(){
 		    		'id' : 1,
 		    		'title': 'Product setup testing',
 		    		'object': new TestSet('Product setup testing'),
+		    		'selected': false,
 		    		'nodes' : 
 		    			[
 		    			 	{
 			    			 	'id' : 11,
 			    			 	'title' : '1A1 Setup Test',
 			    			 	'object': new Test('1A1 Setup Test', 'Product setup testing'),
+					    		'selected': false,
 			    			 	'nodes' : [
 				   		    			 	{
 							    			 	'id' : 111,
 							    			 	'title' : 'Add Inventory',
 							    			 	'object' : new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing'),
+									    		'selected': false,
 							    			 	'nodes' : []
 						    			 	},
 					    			 	]
@@ -117,18 +131,21 @@ function TestDataReader(){
 			    			 	'id' : 12,
 			    			 	'title' : '1A1 Add Test',
 			    			 	'object': new Test('1A1 Add Test', 'Product setup testing'),
+					    		'selected': false,
 			    			 	'nodes' : []
 		    			 	},
 		    			 	{
 			    			 	'id' : 13,
 			    			 	'title' : '1A1 Subtract Test',
 			    			 	'object': new Test('1A1 Subtract Test', 'Product setup testing'),
+					    		'selected': false,
 			    			 	'nodes' : []
 		    			 	},
 		    			 	{
 			    			 	'id' : 14,
 			    			 	'title' : '1A1 Magic Test',
 			    			 	'object': new Test('1A1 Magic Test', 'Product setup testing'),
+					    		'selected': false,
 			    			 	'nodes' : []
 		    			 	}
 		    			]
@@ -137,6 +154,7 @@ function TestDataReader(){
 		    		'id' : 2,
 		    		'title': 'Sales Order Create testing',
 		    		'object': new TestSet('Sales Order Create testing'),
+		    		'selected': false,
 		    		'nodes' : 
 		    			[
 		    			]
@@ -145,6 +163,7 @@ function TestDataReader(){
 		    		'id' : 3,
 		    		'title': 'Sales Order Maintenance testing',
 		    		'object': new TestSet('Sales Order Maintenance testing'),
+		    		'selected': false,
 		    		'nodes' : 
 		    			[ ]
 	            }
@@ -191,7 +210,8 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 
 .controller('AutoTestSetupTreeController',[ '$scope', '$uibModal', 'ParamService', 'ModalService', 'SelectedNodeService', 'ModalResponseService',
                                             function($scope, $uibModal, ParamService, ModalService, SelectedNodeService, ModalResponseService){	    
-   $scope.open = function (scope) {
+	
+	$scope.open = function (scope) {
     	var modalInstance = $uibModal.open({
     	      animation: $scope.animationsEnabled,
     	      //templateUrl: 'TestStepModalContent.html',
@@ -238,13 +258,21 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
           id: nodeData.id * 10 + nodeData.nodes.length,
           title: title,
           object: ModalResponseService.getResponse(),
-          nodes: []
+          nodes: [],
+		  selected: false,
         });
     }
    
    $scope.updateSelectedItem = function(scope){
-	   this.currentItem = scope;
+	   SelectedNodeService.setSelectedNode(scope);
+
 	   ParamService.params = scope.$modelValue.object.getParams();
+   }
+   
+   $scope.isSelectedNode = function(scope){
+	   if(scope.$modelValue.id == SelectedNodeService.getSelectedNode().$modelValue.id)
+		   return true;
+	   return false;
    }
    this.currentItem = 'nothing';
 }])

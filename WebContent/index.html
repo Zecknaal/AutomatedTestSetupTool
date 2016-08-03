@@ -29,25 +29,28 @@
 	 				<li ng-repeat="testset in autoTestData" 
 	 				    data-nodrag 
 	 				    context-menu="contextMenu(this)"
-	 				    ui-tree-node>
-						<div ui-tree-handle>
+	 				    ui-tree-node
+				 		ng-click="updateSelectedItem(this);$event.stopPropagation();">
+						<div ui-tree-handle
+							 ng-class="{'ui-item-selected' : isSelectedNode(this)}">
 							{{testset.title}}
 				 			<ol ui-tree-nodes 
 				 			    ng-model="testset.nodes">
 				 				<li ng-repeat="test in testset.nodes" 
 				 					class="list-group-item"
 				 					context-menu="contextMenu(this)" 
-				 					ui-tree-node>
-									<div ui-tree-handle>
+				 					ui-tree-node
+				 					ng-click="updateSelectedItem(this);$event.stopPropagation();">
+									<div ui-tree-handle
+										 ng-class="{'ui-item-selected' : isSelectedNode(this)}">
 										{{test.title}}
 							 			<ol ui-tree-nodes 
 							 				ng-model="test.nodes">
 							 				<li ng-repeat="teststep in test.nodes" 
 							 					context-menu="contextMenu(this)" 
-							 					ui-tree-node  style="myStyle"
-				 								ng-click="updateSelectedItem(this)">
+							 					ui-tree-node
+				 								ng-click="updateSelectedItem(this);$event.stopPropagation();">
 												<div ui-tree-handle
-													 ng-model="teststep.selected"
 												     ng-class="{'ui-item-selected' : isSelectedNode(this)}">
 													{{teststep.title}}
 												</div>
@@ -68,13 +71,8 @@
 	<div class="right-side">
 		<div id='AutoTestDetail' 
 			 ng-controller="AutoTestSetupDetailController">
-			<ol class="input-list">
-				<h1>{{title}}</h1>
-				<li ng-repeat="param in params">
-					<label>{{param}}</label>
-					<input>
-				</li>
-			</ol>
+			<!-- <div ng-include="'TestStepDetail.html'"></div> -->
+			<div ng-include="getDetailHTML()"></div>
 		</div>
 	</div>
 	</div>

@@ -91,12 +91,6 @@ tr.angular-ui-tree-empty {
 }
 
 .ui-item-selected{
-    background: #333333 !important;
+    background: #0099ff !important;
     color: #123456 !important;
-}
-
-.ui-item-not-selected{
-    background: #FFFFFF !important;
-    color: #654321 !important;
-	
 }

@@ -14,6 +14,14 @@ function TestSet(testSet){
 	this.getKey = function(){
 		return { testSet: this.testSet};
 	}
+	
+	this.getDetailHTML = function(){
+		return 'TestSetDetail.html';
+	}
+	
+	this.handleClicked = function(scope){
+		
+	}
 }
 
 function Test(test, testSet){
@@ -33,6 +41,14 @@ function Test(test, testSet){
 	this.getKey = function(){
 		return { testSet: this.testSet, test: this.test};
 	}
+	
+	this.getDetailHTML = function(){
+		return 'TestDetail.html';
+	}
+	
+	this.handleClicked = function(scope){
+		
+	}
 }
 
 function TestStep(testStep, test, testSet, type){
@@ -43,7 +59,7 @@ function TestStep(testStep, test, testSet, type){
 	this.modalTemplate = "TestStepModalContent.html";
 	this.getContextMenu = function(scope){ 
 		return [ 
-		        ['Delete ' + testSet,
+		        ['Delete ' + testStep,
 		        scope.remove]
 	        ];
 	}
@@ -58,6 +74,14 @@ function TestStep(testStep, test, testSet, type){
 	this.getParams = function(){
 		return this.params;
 	}
+	
+	this.getDetailHTML = function(){
+		return 'TestStepDetail.html';
+	}
+	
+	this.handleClicked = function(scope, ParamService){
+		ParamService.params = scope.$modelValue.object.getParams();
+	}
 }
 function TestStepTemplate(testStep){
 	this.testStep= testStep;
@@ -69,7 +93,6 @@ function TestStepTemplate(testStep){
 		return this.params;
 	}
 }
-
 function TestStepDataReader(){
 	this.readParamValues = function(testStep, test, testSet, type){
 		if(type == 'Add Inventory'){
@@ -102,6 +125,12 @@ function TestStepDataReader(){
 	}
 }
 function TestDataReader(){
+		this.readAllTemplates = function(){
+			return data = [ {test: 'Item Category Test',
+							  testSteps: ['Add Inventory',' Send Sales Order Create', 'Check item category'] } ,
+							 {test: 'Delivery Block Test',
+							  testSteps: ['Add Inventory', 'Send Sales Order Create', 'Check delivery block'] }]
+		}
 		this.read = function(){
     	   autoTestData = 
     		   [    
@@ -121,7 +150,7 @@ function TestDataReader(){
 				   		    			 	{
 							    			 	'id' : 111,
 							    			 	'title' : 'Add Inventory',
-							    			 	'object' : new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing'),
+							    			 	'object' : new TestStep('Add Inventory', '1A1 Setup Test', 'Product setup testing', 'Add Inventory'),
 									    		'selected': false,
 							    			 	'nodes' : []
 						    			 	},
@@ -206,6 +235,20 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 	this.getSelectedNode = function(){
 		return this.node;
 	}
+	this.getSelectedNodeDetailHTML = function(){
+		if(typeof(this.node) == 'undefined')
+			return;
+		return this.node.$modelValue.object.getDetailHTML();
+		//return 'TestStepDetail.html';
+	}
+	this.getSelectedNodeChildNodes = function(){
+		return this.node.$modelValue.nodes;
+	}
+	this.getTitle = function(){
+		if(typeof(this.node) == 'undefined')
+			return;
+		return this.node.$modelValue.title;
+	}
 })
 
 .controller('AutoTestSetupTreeController',[ '$scope', '$uibModal', 'ParamService', 'ModalService', 'SelectedNodeService', 'ModalResponseService',
@@ -242,7 +285,8 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
    }
     
     $scope.contextMenu = function(scope){
-    	SelectedNodeService.setSelectedNode(scope);
+    	//SelectedNodeService.setSelectedNode(scope);
+    	$scope.updateSelectedItem(scope);
     	return scope.$modelValue.object.getContextMenu($scope);
     }
    
@@ -264,12 +308,17 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
     }
    
    $scope.updateSelectedItem = function(scope){
+	   if(typeof(scope) == 'undefined')
+		   return;
 	   SelectedNodeService.setSelectedNode(scope);
-
-	   ParamService.params = scope.$modelValue.object.getParams();
+	   scope.$modelValue.object.handleClicked(scope, ParamService);
+	   //if(typeof(scope.$modelValue.object) == 'TestStep')
+		   //ParamService.params = scope.$modelValue.object.getParams();
    }
    
    $scope.isSelectedNode = function(scope){
+	   if(typeof(scope) == 'undefined' || typeof(SelectedNodeService.getSelectedNode()) == 'undefined')
+		   return;
 	   if(scope.$modelValue.id == SelectedNodeService.getSelectedNode().$modelValue.id)
 		   return true;
 	   return false;
@@ -282,6 +331,16 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 	                                  alert('Add Test');
 	                                }]
 	   ];
+	$scope.getDetailHTML = function(){
+		return SelectedNodeService.getSelectedNodeDetailHTML();//'TestStepDetail.html';
+	}
+	
+	$scope.getTitle = function(){
+		return SelectedNodeService.getTitle();
+	}
+	$scope.getChildNodes = function(){
+		return SelectedNodeService.getSelectedNodeChildNodes();
+	}
     $scope.$watch(
     		function(){ return ParamService.params },
     		function(newval) { $scope.params = newval }
@@ -315,7 +374,12 @@ angular.module('ModalInstanceControlApp', ['ModalResponse', 'TestDataManager']).
 	  $scope.setTestResponse = function(){
 		  ModalResponseService.setResponse( new Test($scope.nodeName, 'TestSet') );
 	  }
+	  
+	  $scope.getTestSteps = function(){
+		  return TestDataManagerService.getAllTestSteps();
+	  }
 	  $scope.testSteps = TestDataManagerService.getAllTestSteps();
+	  $scope.tests = TestDataManagerService.getAllTests();
 	}]);
 
 angular.module('ModalResponse', [])
@@ -344,11 +408,15 @@ angular.module('TestDataManager', ['ngResource'])
 			return testStepReader.readAllTemplates();
 		}
 		
+		this.getAllTests = function(){
+			var testReader = new TestDataReader();
+			return testReader.readAllTemplates( );
+		}
 		this.readAllTestSetsFromURI = function(){
-			var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet?$format=json', { });
-			testSets.get({}, function(testSets){
-				this.something = 5;
-			})
+			//var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet?$format=json', { });
+			//testSets.get({}, function(testSets){
+			//	this.something = 5;
+			//})
 		}
 	}])
 	

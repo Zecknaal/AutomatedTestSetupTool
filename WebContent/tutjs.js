@@ -413,10 +413,11 @@ angular.module('TestDataManager', ['ngResource'])
 			return testReader.readAllTemplates( );
 		}
 		this.readAllTestSetsFromURI = function(){
-			//var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet?$format=json', { });
-			//testSets.get({}, function(testSets){
-			//	this.something = 5;
-			//})
+			var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet(\':testSet\')', { });
+			testSets.get({testSet:'Sales Order Create'}, function(set){
+				this.thingy = set;
+				
+			})
 		}
 	}])
 	

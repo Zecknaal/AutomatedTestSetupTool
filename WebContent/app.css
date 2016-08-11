@@ -4,17 +4,17 @@
 }
 
 .angular-ui-tree-handle {
-/*     background: #f8faff;
+     background: #f8faff;
     border: 1px solid #dae2ea;
-    color: #7c9eb2;
-    padding: 10px 10px; */
-/*         -moz-border-radius:5px;
+    color: #7c9eb2; /*testing commit*/
+    padding: 10px 10px;
+         -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border:1px solid #999;
     border-radius:5px;
     display:inline-block;
     padding:3px 8px;
-    text-decoration:none */
+    text-decoration:none
 }
 
 .angular-ui-tree-handle:hover {

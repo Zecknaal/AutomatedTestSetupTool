@@ -4,17 +4,13 @@
 }
 
 .angular-ui-tree-handle {
-     background: #f8faff;
-    border: 1px solid #dae2ea;
-    color: #7c9eb2; /*testing commit*/
-    padding: 10px 10px;
-         -moz-border-radius:5px;
-    -webkit-border-radius:5px;
-    border:1px solid #999;
+    background: #eee !important;
+    color: #000000 !important;
+    font-size: 11pt;
     border-radius:5px;
-    display:inline-block;
-    padding:3px 8px;
-    text-decoration:none
+ /*   display:inline-block;*/
+    padding:2px 4px;
+    text-decoration:none;
 }
 
 .angular-ui-tree-handle:hover {
@@ -75,22 +71,13 @@ tr.angular-ui-tree-empty {
 
 .left-side{
 	float: left;
-	width: 50%;
-	padding: 0 0 0 1%;
+	width: 30%;
 }
 
 .right-side{
 	display: block;
 	float: left;
 	width: 50%;
-}
-
-.input-list{
-	list-style: none;
-}
-
-.list-group-item{
-	padding: 0 !important;
 }
 
 .on-top{
@@ -102,12 +89,22 @@ tr.angular-ui-tree-empty {
     color: #123456 !important;
 }
 
-.testnode{
-	-webkit-border-radius:5px;
-    border:1px solid #999;
-    border-radius:5px;
-    display:inline-block;
-    padding:3px 8px;
-    text-decoration:none
+.angular-ui-tree-node, .angular-ui-tree-placeholder {
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
+.angular-ui-tree {
+}
+
+.no-font{
+    font-size: 0;
+}
+
+ol{
+    list-style-type: none;
+}
+
+.detail-view{
+}

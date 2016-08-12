@@ -5,73 +5,85 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.min.js"></script>
 		
 		<script src="Libraries/AngularTree/angular-ui-tree.js"></script>
-		<script src="tutjs.js"></script>
+		<script src="js/TestDataManager.js"></script>
+		<script src="js/ModalResponse.js"></script>
+		<script src="js/ModalInstanceControl.js"></script>
+		<script src="js/TestStep.js"></script>
+		<script src="js/Test.js"></script>
+		<script src="js/TestSet.js"></script>
+		<script src="js/TestDataReader.js"></script>
+		<script src="js/TestStepDataReader.js"></script>
+		<script src="js/TestStepTemplate.js"></script>
+		<script src="js/app.js"></script>
 		<script src="bower_components/angular-bootstrap-contextmenu/contextMenu.js"></script>
-<!-- 	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> -->
-	    <script src="bootstrap.js"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.0.1/ui-bootstrap.min.js"></script>
  		<link rel="stylesheet" type="text/css" href="Libraries/AngularTree/angular-ui-tree.css">
- 		<link rel="stylesheet" type="text/css" href="app.css">
-		<link rel="stylesheet" type="text/css" href="modal.css">
- <!-- 		<link rel="stylesheet" type="text/css" href="bower_components/angular-bootstrap-contextmenu/demo/styles.css"> --> 
- 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
+ 		<link rel="stylesheet" type="text/css" href="css/app.css">
+		<link rel="stylesheet" type="text/css" href="css/modal.css">
+ 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		
 	</head>
 	<div ng-app = "AutoTestSetupTreeApp">
- 	<div class="left-side">
-	 	<div id='AutoTestTree' 
-	 	     ng-controller="AutoTestSetupTreeController">
-	  		<div ui-tree>
-	 			<ol ui-tree-nodes 
-	 			    ng-model="autoTestData" 
-	 			    ng-hide="hidden">
-	 				<li ng-repeat="testset in autoTestData" 
-	 				    data-nodrag 
-	 				    context-menu="contextMenu(this)"
-	 				    ui-tree-node
-				 		ng-click="updateSelectedItem(this);$event.stopPropagation();">
-						<div ui-tree-handle
-							 ng-class="{'ui-item-selected' : isSelectedNode(this)}">
-							{{testset.title}}
-				 			<ol ui-tree-nodes 
-				 			    ng-model="testset.nodes">
-				 				<li ng-repeat="test in testset.nodes" 
-				 					class="list-group-item"
-				 					context-menu="contextMenu(this)" 
-				 					ui-tree-node
-				 					ng-click="updateSelectedItem(this);$event.stopPropagation();">
+		<div class="left-side">
+			<div id='AutoTestTree'
+				 ng-controller="AutoTestSetupTreeController">
+				<div ui-tree>
+					<ol ui-tree-nodes
+						ng-model="autoTestData"
+						ng-class="{hidden: collapsed}"
+						ng-hide="hidden">
+						<li ng-repeat="testset in autoTestData"
+							data-nodrag
+							context-menu="contextMenu(this)"
+							ui-tree-node
+							ng-click="updateSelectedItem(this);$event.stopPropagation();">
+							<div ui-tree-handle
+								 class="tree-node tree-node-content"
+								 ng-class="{'ui-item-selected' : isSelectedNode(this)}">
+								<!--<i class="glyphicon glyphicon-minus"></i>	-->
+								<i ng-class="getIcon(this)"></i>
+								{{testset.title}}
+							</div>
+							<ol ui-tree-nodes
+								ng-class="{hidden: collapsed}"
+								ng-model="testset.nodes">
+								<li ng-repeat="test in testset.nodes"
+									context-menu="contextMenu(this)"
+									ui-tree-node
+									ng-click="updateSelectedItem(this);$event.stopPropagation();">
 									<div ui-tree-handle
+										 class="tree-node tree-node-content"
 										 ng-class="{'ui-item-selected' : isSelectedNode(this)}">
 										{{test.title}}
-							 			<ol ui-tree-nodes 
-							 				ng-model="test.nodes">
-							 				<li ng-repeat="teststep in test.nodes" 
-							 					context-menu="contextMenu(this)" 
-							 					ui-tree-node
-				 								ng-click="updateSelectedItem(this);$event.stopPropagation();">
-												<div ui-tree-handle
-												     ng-class="{'ui-item-selected' : isSelectedNode(this)}">
-													{{teststep.title}}
-												</div>
-											</li>
-										</ol>
 									</div>
+									<ol ui-tree-nodes
+										ng-model="test.nodes"
+										ng-class="{hidden: collapsed}">
+										<li ng-repeat="teststep in test.nodes"
+											context-menu="contextMenu(this)"
+											ui-tree-node
+											ng-click="updateSelectedItem(this);$event.stopPropagation();">
+											<div ui-tree-handle
+												 class="tree-node tree-node-content"
+												 ng-class="{'ui-item-selected' : isSelectedNode(this)}">
+												{{teststep.title}}
+											</div>
+										</li>
+									</ol>
 								</li>
 							</ol>
-						</div>
-	 				</li>
-	 			</ol>
-	 		</div>
+						</li>
+					</ol>
+				</div>
+			</div>
 		</div>
-	</div>
-	
 
-	
-	<div class="right-side">
-		<div id='AutoTestDetail' 
-			 ng-controller="AutoTestSetupDetailController">
-			<!-- <div ng-include="'TestStepDetail.html'"></div> -->
-			<div ng-include="getDetailHTML()"></div>
+
+
+		<div id='AutoTestDetail'
+			 class="right-side detail-view"
+			 ng-controller="AutoTestSetupDetailController"
+			 ng-include="getDetailHTML()">
 		</div>
-	</div>
 	</div>
 </html>

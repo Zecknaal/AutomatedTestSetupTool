@@ -35,8 +35,8 @@ angular.module('TestDataManager', ['ngResource'])
                 'class' : data.Class
             }
 
-            for(var paramIndex = 0; paramIndex < data.d.TestToTestStep.results.length(); paramIndex++){
-                testStep.nodes[paramIndex] = parseTestStepData(data.d.TestToTestStep.results[paramIndex]);
+            for(var paramIndex = 0; paramIndex < data.d.TestToTestStep.results.length; paramIndex++){
+                testStep.nodes[paramIndex] = this.parseTestStepData(data.d.TestToTestStep.results[paramIndex]);
             }
 
             return testStep;
@@ -47,8 +47,8 @@ angular.module('TestDataManager', ['ngResource'])
                 'title' : data.TestName
             };
 
-            for(var testStepIndex = 0; testStepIndex < data.d.TestToTestStep.results.length(); testStepIndex++){
-                test.nodes[testStepIndex] = parseTestStepData(data.d.TestToTestStep.results[testStepIndex]);
+            for(var testStepIndex = 0; testStepIndex < data.d.TestToTestStep.results.length; testStepIndex++){
+                test.nodes[testStepIndex] = this.parseTestStepData(data.d.TestToTestStep.results[testStepIndex]);
             }
 
             return test;
@@ -60,18 +60,18 @@ angular.module('TestDataManager', ['ngResource'])
                 'title' : data.d.TestSetName
             };
 
-            for(var testIndex = 0; testIndex < data.d.TestSetToTest.results.length(); testIndex++){
-                testSet.nodes[testIndex] = parseTestData(data.d.TestSetToTest.results[testIndex]);
+            for(var testIndex = 0; testIndex < data.d.TestSetToTest.results.length; testIndex++){
+                testSet.nodes[testIndex] = this.parseTestData(data.d.TestSetToTest.results[testIndex]);
             }
 
             return testSet;
         }
 
-        this.readAllTestSetsFromURI = function(scope){
+        this.readAllTestSetsFromURI = function(testDataManagerService, scope){
             var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet(\':testSet\')?$expand=TestSetToTest/TestToTestStep/TestStepToParam', { });
             testSets.get({testSet:'Sales Order Create'},
                 function(data){
-                    scope.autoTestData = parseTestSetData(data);
+                    scope.autoTestData = testDataManagerService.parseTestSetData( data );
                 },
                 function(error){
                     scope.autoTestData =

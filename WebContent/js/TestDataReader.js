@@ -9,7 +9,7 @@ function TestDataReader(){
                 testSteps: ['Add Inventory', 'Send Sales Order Create', 'Check delivery block'] }]
     }
     this.read = function(testDataManagerService, scope){
-        testDataManagerService.readAllTestSetsFromURI(scope);
+        testDataManagerService.readAllTestSetsFromURI(testDataManagerService, scope);
     };
 
     this.getTestStepDetails = function(testStep){

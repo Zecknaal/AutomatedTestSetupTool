@@ -103,8 +103,6 @@ var autoTestTree = angular.module('AutoTestSetupTreeApp', ['ui.tree', 'ui.bootst
 		   scope.toggle();
 	   SelectedNodeService.setSelectedNode(scope);
 	   scope.$modelValue.object.handleClicked(scope, ParamService);
-	   //if(typeof(scope.$modelValue.object) == 'TestStep')
-		   //ParamService.params = scope.$modelValue.object.getParams();
    }
 
    $scope.getIcon = function(scope){

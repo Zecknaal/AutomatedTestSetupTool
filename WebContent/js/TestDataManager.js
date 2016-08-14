@@ -16,7 +16,7 @@ angular.module('TestDataManager', ['ngResource'])
             return this.autoTestData;
         }
         this.readAllTestSetsFromURI = function(scope){
-            var testSets = $resource('http://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet(\':testSet\')?$expand=TestSetToTest/TestToTestStep/TestStepToParam', { });
+            var testSets = $resource('https://arlspmdd009.lrd.cat.com:8010/sap/opu/odata/sap/Z_AUTO_TEST_TOOL_SETUP_SRV/AutoTestSetSet(\':testSet\')?$expand=TestSetToTest/TestToTestStep/TestStepToParam', { });
             testSets.get({testSet:'Sales Order Create'},
                 function(data){
                     scope.autoTestData =

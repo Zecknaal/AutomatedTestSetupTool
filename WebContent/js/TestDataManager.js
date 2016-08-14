@@ -3,6 +3,12 @@
  */
 angular.module('TestDataManager', ['ngResource'])
     .service('TestDataManagerService', ['$resource', function($resource){
+        this.nextID = 1;
+        this.getID = function(){
+            var returnID = this.nextID;
+            this.nextID++;
+            return returnID;
+        }
         this.getAllTestSteps = function(){
             var testStepReader = new TestStepDataReader();
             return testStepReader.readAllTemplates();
@@ -17,38 +23,42 @@ angular.module('TestDataManager', ['ngResource'])
         }
 
         this.parseParamData = function(data){
-            var params;
-            for(var paramIndex = 0; paramIndex < data.d.TestToTestStep.results.length(); paramIndex++){
-                params[paramIndex] = {
-                    'name' : data.ParameterName,
-                    'value' : data.Value
-                }
-            }
+            var param = {
+                'name' : data.ParameterName,
+                'value' : data.Value
+            };
 
-            return params;
+            return param;
         }
 
         this.parseTestStepData = function(data){
             var testStep = {
-                'id' : 3,
+                'id' : this.getID( ),
                 'title' : data.Name,
-                'class' : data.Class
+                //'class' : data.Class,
+                'nodes' : [],
+                //'params' : [],
+                'object' : new TestStep(data.Name, data.Test, data.TestSet, data.Class),
+                'selected': false,
             }
 
-            for(var paramIndex = 0; paramIndex < data.d.TestToTestStep.results.length; paramIndex++){
-                testStep.nodes[paramIndex] = this.parseTestStepData(data.d.TestToTestStep.results[paramIndex]);
-            }
+            // for(var paramIndex = 0; paramIndex < data.TestStepToParam.results.length; paramIndex++){
+            //     testStep.params[paramIndex] = this.parseParamData(data.TestStepToParam.results[paramIndex]);
+            // }
 
             return testStep;
         }
         this.parseTestData = function(data){
             var test = {
-                'id' : 2,
-                'title' : data.TestName
+                'id' : this.getID( ),
+                'title' : data.TestName,
+                'nodes' : [],
+                'object' : new Test(data.TestName, data.testSetName),
+                'selected': false,
             };
 
-            for(var testStepIndex = 0; testStepIndex < data.d.TestToTestStep.results.length; testStepIndex++){
-                test.nodes[testStepIndex] = this.parseTestStepData(data.d.TestToTestStep.results[testStepIndex]);
+            for(var testStepIndex = 0; testStepIndex < data.TestToTestStep.results.length; testStepIndex++){
+                test.nodes[testStepIndex] = this.parseTestStepData(data.TestToTestStep.results[testStepIndex]);
             }
 
             return test;
@@ -56,15 +66,18 @@ angular.module('TestDataManager', ['ngResource'])
 
         this.parseTestSetData = function(data){
             var testSet = {
-                'id' : 1,
-                'title' : data.d.TestSetName
+                'id' : this.getID( ),
+                'title' : data.d.TestSetName,
+                'nodes' : [],
+                'object' : new TestSet(data.TestSetName),
+                'selected': false,
             };
 
             for(var testIndex = 0; testIndex < data.d.TestSetToTest.results.length; testIndex++){
                 testSet.nodes[testIndex] = this.parseTestData(data.d.TestSetToTest.results[testIndex]);
             }
 
-            return testSet;
+            return [ testSet ];
         }
 
         this.readAllTestSetsFromURI = function(testDataManagerService, scope){
